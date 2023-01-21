@@ -11,13 +11,14 @@ defmodule Gateflow.Application do
       # Start the Telemetry supervisor
       GateflowWeb.Telemetry,
       # Start the Ecto repository
-      Gateflow.Repo,
+      # Gateflow.Repo,
       # Start the PubSub system
       {Phoenix.PubSub, name: Gateflow.PubSub},
       # Start Finch
       {Finch, name: Gateflow.Finch},
       # Start the Endpoint (http/https)
-      GateflowWeb.Endpoint
+      GateflowWeb.Endpoint,
+      Gateflow.Project.Repo
       # Start a worker by calling: Gateflow.Worker.start_link(arg)
       # {Gateflow.Worker, arg}
     ]

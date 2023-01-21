@@ -7,8 +7,8 @@
 # General application configuration
 import Config
 
-config :gateflow,
-  ecto_repos: [Gateflow.Repo]
+# config :gateflow,
+#   ecto_repos: [Gateflow.Repo]
 
 # Configures the endpoint
 config :gateflow, GateflowWeb.Endpoint,
@@ -61,6 +61,9 @@ config :phoenix, :json_library, Jason
 
 config :ash, :use_all_identities_in_manage_relationship?, false
 
+config :gateflow, ash_apis: [Gateflow.Project.Resources]
+
+config :gateflow, ecto_repos: [Gateflow.Project.Repo]
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

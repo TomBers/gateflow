@@ -1,7 +1,7 @@
 import Config
 
 # Configure your database
-config :gateflow, Gateflow.Repo,
+config :gateflow, Gateflow.Project.Repo,
   username: "postgres",
   password: "postgres",
   hostname: "localhost",
