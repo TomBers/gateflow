@@ -27,6 +27,8 @@ defmodule Gateflow.Project.Resources.FlowItem do
 
   attributes do
     uuid_primary_key :id
+
+    # This is the id of the parent a little confusing due to the default naming, but I am not sure how to change it at the moment
     uuid_primary_key :flow_item_id, primary_key?: false
 
     attribute :title, :string
@@ -41,6 +43,7 @@ defmodule Gateflow.Project.Resources.FlowItem do
 
   relationships do
     belongs_to :board, Gateflow.Project.Resources.Board
+    # See https://ash-hq.org/docs/dsl/ash/2.5.7/resource/relationships/has_many
     has_many :parents, Gateflow.Project.Resources.FlowItem
   end
 end

@@ -10,14 +10,24 @@ defmodule GateflowWeb.Router do
     plug :put_secure_browser_headers
   end
 
+  import AshAdmin.Router
+  admin_browser_pipeline(:browser)
+
   pipeline :api do
     plug :accepts, ["json"]
   end
 
-  scope "/", GateflowWeb do
-    pipe_through :browser
+  # scope "/", GateflowWeb do
+  #   pipe_through :browser
 
-    get "/", PageController, :home
+  #   get "/", PageController, :home
+  # end
+
+  scope "/" do
+    # Pipe it through your browser pipeline
+    pipe_through [:browser]
+
+    ash_admin("/admin")
   end
 
   # Other scopes may use custom stacks.
