@@ -1,6 +1,4 @@
 defmodule Gateflow.CreateResources do
-  require Ash.Query
-
   alias Gateflow.Project.Resources.{Board, FlowItem}
   alias Gateflow.Project.Resources
 
