@@ -44,6 +44,10 @@ defmodule Gateflow.Project.Resources.FlowItem do
       default :not_blocked
       allow_nil? false
     end
+
+    attribute :is_root, :boolean, default: false
+
+    create_timestamp :inserted_at
   end
 
   relationships do
