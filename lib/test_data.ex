@@ -5,6 +5,13 @@ defmodule TestData do
 
   alias Gateflow.Project.Resources
 
+  def build_tree do
+    Board
+    |> Ash.Query.load(flow_items: [:children])
+    |> Ash.Query.filter(id == "afca4da1-84eb-4b97-ad23-59a027ad9991")
+    |> Resources.read!()
+  end
+
   def read_data do
     # Read ID of all Flow items
     # Gateflow.Project.Resources.FlowItem
@@ -13,11 +20,11 @@ defmodule TestData do
 
     items =
       FlowItem
-      |> Ash.Query.load([:parents, :board])
-      |> Ash.Query.filter(id == "7bb881b8-a292-4113-bf82-73951c86a303")
+      |> Ash.Query.load([:children, :board])
+      |> Ash.Query.filter(id == "cc41d90e-b173-4472-9a5f-db1fbc95b892")
       |> Resources.read!()
 
-    _item = List.first(items)
+    List.first(items)
   end
 
   def run do
@@ -30,33 +37,18 @@ defmodule TestData do
       FlowItem
       |> Ash.Changeset.for_create(:create, %{title: "Flow Item"})
       |> Resources.create!()
-
-    next_item =
-      FlowItem
-      |> Ash.Changeset.for_create(:create, %{title: "Next Flow Item"})
-      |> Resources.create!()
       |> Ash.Changeset.for_update(:set_to_blocked)
       |> Resources.update!()
 
-    parent =
+    child =
       FlowItem
-      |> Ash.Changeset.for_create(:create, %{title: "Parent"})
+      |> Ash.Changeset.for_create(:create, %{title: "Child"})
       |> Resources.create!()
 
-    second_parent =
+    second_child =
       FlowItem
-      |> Ash.Changeset.for_create(:create, %{title: "Second Parent"})
+      |> Ash.Changeset.for_create(:create, %{title: "Second Child"})
       |> Resources.create!()
-
-    item =
-      item
-      |> Ash.Changeset.for_update(:add_parent, %{parent_id: parent.id})
-      |> Resources.update!()
-
-    item =
-      item
-      |> Ash.Changeset.for_update(:add_parent, %{parent_id: second_parent.id})
-      |> Resources.update!()
 
     board =
       board
@@ -65,9 +57,20 @@ defmodule TestData do
 
     board =
       board
-      |> Ash.Changeset.for_update(:add_flow_item, %{flow_item_id: next_item.id})
+      |> Ash.Changeset.for_update(:add_flow_item, %{flow_item_id: child.id})
       |> Resources.update!()
 
-    IO.inspect(board)
+    board
+    |> Ash.Changeset.for_update(:add_flow_item, %{flow_item_id: second_child.id})
+    |> Resources.update!()
+
+    item =
+      item
+      |> Ash.Changeset.for_update(:add_child, %{child_id: child.id})
+      |> Resources.update!()
+
+    item
+    |> Ash.Changeset.for_update(:add_child, %{child_id: second_child.id})
+    |> Resources.update!()
   end
 end

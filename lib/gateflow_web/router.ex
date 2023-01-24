@@ -28,6 +28,7 @@ defmodule GateflowWeb.Router do
     pipe_through [:browser]
 
     ash_admin("/admin")
+    get "/", GateflowWeb.PageController, :home
   end
 
   # Other scopes may use custom stacks.

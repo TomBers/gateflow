@@ -14,14 +14,19 @@ defmodule Gateflow.Project.Resources.FlowItem do
       change set_attribute(:state, :blocked)
     end
 
-    update :add_parent do
+    update :set_to_not_blocked do
+      accept []
+      change set_attribute(:state, :not_blocked)
+    end
+
+    update :add_child do
       accept []
 
-      argument :parent_id, :uuid do
+      argument :child_id, :uuid do
         allow_nil? false
       end
 
-      change manage_relationship(:parent_id, :parents, type: :append)
+      change manage_relationship(:child_id, :children, type: :append)
     end
   end
 
@@ -44,6 +49,12 @@ defmodule Gateflow.Project.Resources.FlowItem do
   relationships do
     belongs_to :board, Gateflow.Project.Resources.Board
     # See https://ash-hq.org/docs/dsl/ash/2.5.7/resource/relationships/has_many
-    has_many :parents, Gateflow.Project.Resources.FlowItem
+    has_many :children, Gateflow.Project.Resources.FlowItem
   end
+
+  # code_interface do
+  #   define_for Resources
+
+  #   define :add_child, args: [:child_id]
+  # end
 end

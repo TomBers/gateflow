@@ -1,4 +1,4 @@
-defmodule Gateflow.Project.Repo.Migrations.AddBoardsAndFlowItems do
+defmodule Gateflow.Project.Repo.Migrations.AddBoardAndFlowItems do
   @moduledoc """
   Updates resources based on their most recent snapshots.
 
