@@ -6,8 +6,8 @@ defmodule Gateflow.ReadResources do
 
   def get_board(board_id) do
     Board
-    # |> Ash.Query.load(flow_items: [:children])
-    |> Ash.Query.load(:flow_items)
+    |> Ash.Query.load(flow_items: [:children])
+    # |> Ash.Query.load(:flow_items)
     |> Ash.Query.filter(id == ^board_id)
     |> Resources.read!()
     |> List.first()
