@@ -49,13 +49,14 @@ defmodule Tree do
         node_map(get_item_by_id(node.flow_item_id, all), [node_map(node)])
       end)
 
-    ln_ids = Enum.map(leaf_nodes, & &1.id) ++ Enum.map(converted_leaf_nodes, & &1.id)
+    # TODO - This didn't work - need to rethink the rest filtering
+    # ln_ids = Enum.map(leaf_nodes, & &1.id) ++ Enum.map(converted_leaf_nodes, & &1.id)
+    # rest =
+    #   all
+    #   |> Enum.filter(fn item -> Enum.any?(ln_ids, fn x -> item.id == x end) end)
+    # ++ Enum.map(rest, &node_map(&1))
 
-    rest =
-      all
-      |> Enum.filter(fn item -> Enum.any?(ln_ids, fn x -> item.id == x end) end)
-
-    converted_leaf_nodes ++ Enum.map(rest, &node_map(&1))
+    converted_leaf_nodes
   end
 
   def node_map(item, children \\ []) do

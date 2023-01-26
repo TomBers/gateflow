@@ -18,15 +18,30 @@
 // Include phoenix_html to handle method=PUT/DELETE in forms and buttons.
 import "phoenix_html"
 // Establish Phoenix Socket and LiveView configuration.
-import {Socket} from "phoenix"
-import {LiveSocket} from "phoenix_live_view"
+import { Socket } from "phoenix"
+import { LiveSocket } from "phoenix_live_view"
 import topbar from "../vendor/topbar"
+import drawGraph from "../vendor/graph";
+
+let Hooks = {}
+
+Hooks.LoadLiveGraph = {
+    mounted() {
+        let graph = drawGraph(this.el, this.el.dataset.graph);
+        window.graph = graph;
+    },
+    updated() {
+        // https://hexdocs.pm/phoenix_live_view/js-interop.html#client-hooks-via-phx-hook
+        console.log("Updated vals")
+    }
+}
+
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
-let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}})
+let liveSocket = new LiveSocket("/live", Socket, { hooks: Hooks, params: { _csrf_token: csrfToken } })
 
 // Show progress bar on live navigation and form submits
-topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})
+topbar.config({ barColors: { 0: "#29d" }, shadowColor: "rgba(0, 0, 0, .3)" })
 window.addEventListener("phx:page-loading-start", info => topbar.delayedShow(200))
 window.addEventListener("phx:page-loading-stop", info => topbar.hide())
 

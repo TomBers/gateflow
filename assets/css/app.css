@@ -3,3 +3,9 @@
 @import "tailwindcss/utilities";
 
 /* This file is for your main application CSS */
+#main,
+#liveGraph {
+    max-width: 1800px !important;
+    width: 1800px;
+    height: 1000px;
+}
