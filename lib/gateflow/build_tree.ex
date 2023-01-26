@@ -19,7 +19,7 @@ defmodule BuildTree do
       end)
       |> Enum.group_by(& &1.parent_id)
 
-    # IO.inspect(grouped_by_parent)
+    IO.inspect(grouped_by_parent)
 
     grouped_by_parent
     |> Map.keys()
@@ -31,15 +31,27 @@ defmodule BuildTree do
     res
   end
 
-  def build_tree([h | to_add], all, res) do
+  def build_tree([h | to_add] = items, all, res) do
+    # IO.inspect(items)
     children = Map.get(all, h)
 
     child_map =
       children
-      |> Enum.map(fn item -> Map.put_new(item, :children, get_children(item, all)) end)
+      |> Enum.map(fn item -> Map.put(item, :children, get_children(item, res, all)) end)
+      |> IO.inspect()
       |> List.first()
 
     build_tree(to_add, all, Map.merge(child_map, res))
+  end
+
+  def get_children(item, added, items) do
+    if Map.has_key?(added, item) do
+      Map.get(added, item.id)
+    else
+      Map.get(items, item.id)
+    end
+
+    # items |> Enum.filter(&(&1.parent_id == item.id))
   end
 
   # def search_in_order(to_search, _items, acc) when length(to_search) == 0 do
@@ -58,11 +70,6 @@ defmodule BuildTree do
 
   def get_leaf_nodes(items) do
     items |> Enum.filter(&(length(&1.children) == 0))
-  end
-
-  def get_children(item, items) do
-    Map.get(items, item.id)
-    # items |> Enum.filter(&(&1.parent_id == item.id))
   end
 
   def get_item_by_id(id, items) do
