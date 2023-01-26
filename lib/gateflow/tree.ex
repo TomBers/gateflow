@@ -39,10 +39,23 @@ defmodule Tree do
   end
 
   def replace_parents(leaf_nodes, all) do
-    leaf_nodes
-    |> Enum.map(fn node ->
-      node_map(get_item_by_id(node.flow_item_id, all), [node_map(node)])
-    end)
+    # TODO - I think we need to include nodes that are not just the parents of leaf nodes, as the next method need to match parents together
+    # So I think the response is something like leafnodes ++ [all - leaf nodes and parents]
+    # Needs testing with more layerd tree
+
+    converted_leaf_nodes =
+      leaf_nodes
+      |> Enum.map(fn node ->
+        node_map(get_item_by_id(node.flow_item_id, all), [node_map(node)])
+      end)
+
+    ln_ids = Enum.map(leaf_nodes, & &1.id) ++ Enum.map(converted_leaf_nodes, & &1.id)
+
+    rest =
+      all
+      |> Enum.filter(fn item -> Enum.any?(ln_ids, fn x -> item.id == x end) end)
+
+    converted_leaf_nodes ++ Enum.map(rest, &node_map(&1))
   end
 
   def node_map(item, children \\ []) do
