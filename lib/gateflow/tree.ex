@@ -17,12 +17,19 @@ defmodule Tree do
   end
 
   def merge(items) do
+    # TODO - merge_common_parents seems a better approach
     merged =
       items
       |> Enum.reduce(items, fn item, acc -> find_find_children_and_remove_from_acc(item, acc) end)
 
+    IO.inspect(Enum.any?(merged, &(&1.is_root == false)),
+      label: "Any no root nodes at top level"
+    )
+
+    IO.inspect(merged)
+
     # Exit condition - all top top level nodes are root nodes
-    if Enum.all?(merged, &(&1.is_root == false)) do
+    if Enum.any?(merged, &(&1.is_root == false)) do
       merge(merged)
     else
       IO.inspect("Exit condition")
@@ -49,6 +56,7 @@ defmodule Tree do
       |> Enum.map(fn node ->
         node_map(get_item_by_id(node.flow_item_id, all), [node_map(node)])
       end)
+      |> merge_common_parents([])
 
     ln_ids = Enum.map(leaf_nodes, & &1.id) ++ Enum.map(converted_leaf_nodes, & &1.id)
 
@@ -59,6 +67,30 @@ defmodule Tree do
       |> Enum.map(&node_map(&1))
 
     rest ++ converted_leaf_nodes
+  end
+
+  def merge_common_parents([], acc) do
+    acc
+  end
+
+  def merge_common_parents([h | items], acc) do
+    common = Enum.filter(items, &(&1.id == h.id))
+    unique = Enum.reject(items, &(&1.id == h.id))
+
+    new_acc =
+      Enum.reduce(common, h, fn item, acc ->
+        Map.update!(acc, :children, fn x -> x ++ item.children end)
+      end)
+
+    merge_common_parents(unique, acc ++ [new_acc])
+  end
+
+  def merge_helper(:children, v1, v2) do
+    v1 ++ v2
+  end
+
+  def merge_helper(_k, v1, _v2) do
+    v1
   end
 
   def node_map(item, children \\ []) do
