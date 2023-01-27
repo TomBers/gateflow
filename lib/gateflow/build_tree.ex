@@ -1,6 +1,7 @@
 defmodule BuildTree do
   alias Gateflow.ReadResources
 
+  # NOTE- this is out of date - use Tree.ex
   def run do
     board = ReadResources.get_board("1cd52d70-0db4-4c06-91b5-e9e2387b95b3")
     items = board.flow_items

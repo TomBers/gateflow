@@ -2,7 +2,11 @@ defmodule Tree do
   alias Gateflow.ReadResources
 
   def run do
-    board = ReadResources.get_board("1cd52d70-0db4-4c06-91b5-e9e2387b95b3")
+    run("156f7c2e-59ea-4aaa-bd97-af98919a7bba")
+  end
+
+  def run(id) do
+    board = ReadResources.get_board(id)
     items = board.flow_items
 
     leaf_nodes = get_leaf_nodes(items)
@@ -12,17 +16,18 @@ defmodule Tree do
     merge(to_merge)
   end
 
-  def merge(items) when length(items) == 1 do
-    IO.inspect("Exit condition")
-    items |> List.first()
-  end
-
   def merge(items) do
     merged =
       items
       |> Enum.reduce(items, fn item, acc -> find_find_children_and_remove_from_acc(item, acc) end)
 
-    merge(merged)
+    # Exit condition - all top top level nodes are root nodes
+    if Enum.all?(merged, &(&1.is_root == false)) do
+      merge(merged)
+    else
+      IO.inspect("Exit condition")
+      merged |> List.first()
+    end
   end
 
   def find_find_children_and_remove_from_acc(item, acc) do
@@ -39,24 +44,21 @@ defmodule Tree do
   end
 
   def replace_parents(leaf_nodes, all) do
-    # TODO - I think we need to include nodes that are not just the parents of leaf nodes, as the next method need to match parents together
-    # So I think the response is something like leafnodes ++ [all - leaf nodes and parents]
-    # Needs testing with more layerd tree
-
     converted_leaf_nodes =
       leaf_nodes
       |> Enum.map(fn node ->
         node_map(get_item_by_id(node.flow_item_id, all), [node_map(node)])
       end)
 
-    # TODO - This didn't work - need to rethink the rest filtering
-    # ln_ids = Enum.map(leaf_nodes, & &1.id) ++ Enum.map(converted_leaf_nodes, & &1.id)
-    # rest =
-    #   all
-    #   |> Enum.filter(fn item -> Enum.any?(ln_ids, fn x -> item.id == x end) end)
-    # ++ Enum.map(rest, &node_map(&1))
+    ln_ids = Enum.map(leaf_nodes, & &1.id) ++ Enum.map(converted_leaf_nodes, & &1.id)
 
-    converted_leaf_nodes
+    # These are all the nodes that are neither leaf not parents of leaf nodes
+    rest =
+      all
+      |> Enum.reject(fn item -> Enum.any?(ln_ids, fn x -> item.id == x end) end)
+      |> Enum.map(&node_map(&1))
+
+    rest ++ converted_leaf_nodes
   end
 
   def node_map(item, children \\ []) do

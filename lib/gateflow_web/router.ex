@@ -30,7 +30,7 @@ defmodule GateflowWeb.Router do
     ash_admin("/admin")
     get "/", GateflowWeb.PageController, :home
     live "/board/:board_id", GateflowWeb.BoardLive.Index, :index
-    live "/live/graph", GateflowWeb.GraphLive.Index, :index
+    live "/graph/:board_id", GateflowWeb.GraphLive.Index, :index
   end
 
   # Other scopes may use custom stacks.
