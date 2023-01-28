@@ -13,23 +13,10 @@ defmodule SimpleTree do
       items
       |> Enum.map(&node_map(&1))
 
-    suited_and_booted =
-      simplified
-      |> Enum.map(&Map.put(&1, :steps_to_root, steps_to_root(&1, simplified, 0)))
-      |> sort_by_steps_to_root
-
-    mash(suited_and_booted)
-  end
-
-  def mash(items) do
-    items |> merge_to_parent()
-    # if Enum.any?(items, &(!&1.is_root)) do
-    #   items
-    #   |> merge_to_parent([])
-    # else
-    #   IO.inspect("Exit Condition")
-    #   items |> List.first()
-    # end
+    simplified
+    |> Enum.map(&Map.put(&1, :steps_to_root, steps_to_root(&1, simplified, 0)))
+    |> sort_by_steps_to_root
+    |> merge_to_parent()
   end
 
   def steps_to_root(item, _all, cnt) when item.is_root do
@@ -44,24 +31,30 @@ defmodule SimpleTree do
     Enum.sort(items, fn e1, e2 -> e1.steps_to_root > e2.steps_to_root end)
   end
 
-  def merge_to_parent([h | items] = all) do
+  def merge_to_parent(all) do
     if Enum.all?(all, & &1.is_root) do
       all
     else
-      parent = Enum.find(items, &(&1.id == h.parent_id))
-      parent_id = Enum.find_index(items, &(&1.id == h.parent_id))
-      siblings = Enum.filter(all, &(&1.parent_id == parent.id))
-      sibling_ids = Enum.map(siblings, & &1.id)
-      # Update parent
-      parent = Map.update!(parent, :children, fn x -> x ++ siblings end)
-      # IO.inspect(parent, label: "UPDATD PAretn")
-      items = List.update_at(items, parent_id, fn _x -> parent end)
-      # IO.inspect(items, label: "LIST updated")
-      # Filter changed items
-      not_changed = Enum.reject(items, &Enum.member?(sibling_ids, &1.id))
-
-      merge_to_parent(not_changed)
+      all
+      |> update_parent_in_place()
+      |> merge_to_parent()
     end
+  end
+
+  defp update_parent_in_place([h | items] = all) do
+    parent = Enum.find(items, &(&1.id == h.parent_id))
+    parent_id = Enum.find_index(items, &(&1.id == h.parent_id))
+
+    siblings = Enum.filter(all, &(&1.parent_id == parent.id))
+    sibling_ids = Enum.map(siblings, & &1.id)
+
+    # Update parent
+    parent = Map.update!(parent, :children, fn x -> x ++ siblings end)
+
+    # Add updated parent to items and filter the moved children
+    items
+    |> List.update_at(parent_id, fn _x -> parent end)
+    |> Enum.reject(&Enum.member?(sibling_ids, &1.id))
   end
 
   def node_map(item, children \\ []) do
@@ -72,17 +65,5 @@ defmodule SimpleTree do
       is_root: item.is_root,
       children: children
     }
-  end
-
-  def get_root_items(items) do
-    items |> Enum.filter(& &1.is_root)
-  end
-
-  def get_leaf_nodes(items) do
-    items |> Enum.filter(&(length(&1.children) == 0))
-  end
-
-  def get_item_by_id(id, items) do
-    Enum.find(items, &(&1.id == id))
   end
 end
