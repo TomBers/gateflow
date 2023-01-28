@@ -8,6 +8,7 @@ defmodule GateflowWeb.GraphLive.Index do
 
   @impl true
   def handle_params(%{"board_id" => board_id}, _url, socket) do
-    {:noreply, assign(socket, :graph_data, Jason.encode!(SimpleTree.run(board_id)))}
+    trees = SimpleTree.run(board_id) |> Enum.map(&Jason.encode!(&1))
+    {:noreply, assign(socket, :graph_data, trees)}
   end
 end

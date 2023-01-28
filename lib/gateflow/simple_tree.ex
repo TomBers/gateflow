@@ -22,7 +22,7 @@ defmodule SimpleTree do
   end
 
   def mash(items) do
-    items |> merge_to_parent() |> List.first()
+    items |> merge_to_parent()
     # if Enum.any?(items, &(!&1.is_root)) do
     #   items
     #   |> merge_to_parent([])
