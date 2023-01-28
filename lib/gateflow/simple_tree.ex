@@ -9,14 +9,14 @@ defmodule SimpleTree do
     board = ReadResources.get_board(id)
     items = board.flow_items
 
-    simplified =
-      items
-      |> Enum.map(&node_map(&1))
-
-    simplified
-    |> Enum.map(&Map.put(&1, :steps_to_root, steps_to_root(&1, simplified, 0)))
+    items
+    |> Enum.map(&node_map(&1, items))
     |> sort_by_steps_to_root
     |> merge_to_parent()
+  end
+
+  def steps_to_root(item, all) do
+    steps_to_root(item, all, 0)
   end
 
   def steps_to_root(item, _all, cnt) when item.is_root do
@@ -24,9 +24,10 @@ defmodule SimpleTree do
   end
 
   def steps_to_root(item, all, cnt) do
-    all |> Enum.find(&(&1.id == item.parent_id)) |> steps_to_root(all, cnt + 1)
+    all |> Enum.find(&(&1.id == item.flow_item_id)) |> steps_to_root(all, cnt + 1)
   end
 
+  # Start with the furthest nodes away and move close to the root node
   def sort_by_steps_to_root(items) do
     Enum.sort(items, fn e1, e2 -> e1.steps_to_root > e2.steps_to_root end)
   end
@@ -57,13 +58,14 @@ defmodule SimpleTree do
     |> Enum.reject(&Enum.member?(sibling_ids, &1.id))
   end
 
-  def node_map(item, children \\ []) do
+  def node_map(item, all) do
     %{
       id: item.id,
       parent_id: item.flow_item_id,
       name: item.title,
       is_root: item.is_root,
-      children: children
+      children: [],
+      steps_to_root: steps_to_root(item, all)
     }
   end
 end
