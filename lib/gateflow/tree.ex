@@ -2,7 +2,7 @@ defmodule Tree do
   alias Gateflow.ReadResources
 
   def run do
-    run("156f7c2e-59ea-4aaa-bd97-af98919a7bba")
+    run("1cd52d70-0db4-4c06-91b5-e9e2387b95b3")
   end
 
   def run(id) do
@@ -17,7 +17,7 @@ defmodule Tree do
   end
 
   def merge(items) do
-    # TODO - merge_common_parents seems a better approach
+    # TODO - merge_common_parents seems a better approach - clean up??
     merged =
       items
       |> Enum.reduce(items, fn item, acc -> find_find_children_and_remove_from_acc(item, acc) end)
@@ -83,14 +83,6 @@ defmodule Tree do
       end)
 
     merge_common_parents(unique, acc ++ [new_acc])
-  end
-
-  def merge_helper(:children, v1, v2) do
-    v1 ++ v2
-  end
-
-  def merge_helper(_k, v1, _v2) do
-    v1
   end
 
   def node_map(item, children \\ []) do
