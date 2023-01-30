@@ -59,18 +59,32 @@ defmodule SimpleTree do
   end
 
   def node_map(item, all) do
+    state = get_any_blocked(item, all)
+
     %{
       id: item.id,
       parent_id: item.flow_item_id,
       name: item.title,
       is_root: item.is_root,
-      state: item.state,
+      state: state,
       children: [],
       steps_to_root: steps_to_root(item, all),
       itemStyle: %{
         # borderType: "dotted",
-        color: ReadResources.get_item_col(item)
+        color: ReadResources.item_col(state)
       }
     }
+  end
+
+  def get_any_blocked(item, _all) when item.is_root do
+    item.state
+  end
+
+  def get_any_blocked(item, all) do
+    if item.state == :blocked do
+      :blocked
+    else
+      all |> Enum.find(&(&1.id == item.flow_item_id)) |> get_any_blocked(all)
+    end
   end
 end
