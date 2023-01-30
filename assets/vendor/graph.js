@@ -28,9 +28,6 @@ function drawGraph(chartDom, data) {
                             align: 'left'
                         }
                     },
-                    emphasis: {
-                        focus: 'descendant'
-                    },
                     expandAndCollapse: false,
                     animation: false,
                     animationDuration: 550,
