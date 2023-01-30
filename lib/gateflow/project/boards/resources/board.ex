@@ -24,6 +24,8 @@ defmodule Gateflow.Project.Resources.Board do
     uuid_primary_key :id
 
     attribute :name, :string
+
+    create_timestamp :inserted_at
   end
 
   relationships do

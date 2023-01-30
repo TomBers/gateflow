@@ -1,0 +1,20 @@
+<div class="container">
+  <h1 class="text-3xl"><%= @board.name %></h1>
+  <%= @board.id %>
+  <button
+    phx-click="add_root_item"
+    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+  >
+    Add Root Item
+  </button>
+
+  <%= for item <- get_root_items(@board.flow_items) do %>
+    <.live_component
+      module={ItemComponent}
+      id={item.id}
+      board={@board}
+      offset={0}
+      item={load_children(item)}
+    />
+  <% end %>
+</div>

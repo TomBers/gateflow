@@ -1,0 +1,8 @@
+{
+    "name": "root item 0",
+    "children": [
+        {
+            "name": "Child 1"
+        }
+    ]
+}
