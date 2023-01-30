@@ -64,8 +64,13 @@ defmodule SimpleTree do
       parent_id: item.flow_item_id,
       name: item.title,
       is_root: item.is_root,
+      state: item.state,
       children: [],
-      steps_to_root: steps_to_root(item, all)
+      steps_to_root: steps_to_root(item, all),
+      itemStyle: %{
+        # borderType: "dotted",
+        color: ReadResources.get_item_col(item)
+      }
     }
   end
 end

@@ -27,12 +27,21 @@ let Hooks = {}
 
 Hooks.LoadLiveGraph = {
     mounted() {
-        let graph = drawGraph(this.el, this.el.dataset.graph);
+        let graph = drawGraph(this.el, JSON.parse(this.el.dataset.graph));
+        let context = this;
+        graph.on('click', function (params) {
+            context.pushEvent("node_clicked", params.data)
+        });
         window.graph = graph;
     },
     updated() {
         // https://hexdocs.pm/phoenix_live_view/js-interop.html#client-hooks-via-phx-hook
-        console.log("Updated vals")
+        graph = drawGraph(this.el, JSON.parse(this.el.dataset.graph));
+        let context = this;
+        graph.on('click', function (params) {
+            context.pushEvent("node_clicked", params.data)
+        });
+        window.graph = graph;
     }
 }
 

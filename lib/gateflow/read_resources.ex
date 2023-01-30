@@ -27,4 +27,16 @@ defmodule Gateflow.ReadResources do
     |> Resources.read!()
     |> List.first()
   end
+
+  def get_item_col(item) do
+    item_col(item.state)
+  end
+
+  def item_col(:blocked) do
+    "red"
+  end
+
+  def item_col(:not_blocked) do
+    "blue"
+  end
 end

@@ -6,14 +6,10 @@ function drawGraph(chartDom, data) {
 
     myChart.setOption(
         (option = {
-            tooltip: {
-                trigger: 'item',
-                triggerOn: 'mousemove'
-            },
             series: [
                 {
                     type: 'tree',
-                    data: [JSON.parse(data)],
+                    data: [data],
                     top: '1%',
                     left: '7%',
                     bottom: '1%',
@@ -35,7 +31,8 @@ function drawGraph(chartDom, data) {
                     emphasis: {
                         focus: 'descendant'
                     },
-                    expandAndCollapse: true,
+                    expandAndCollapse: false,
+                    animation: false,
                     animationDuration: 550,
                     animationDurationUpdate: 750
                 }
@@ -44,6 +41,7 @@ function drawGraph(chartDom, data) {
     );
 
     option && myChart.setOption(option);
+
     return myChart;
 }
 

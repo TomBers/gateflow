@@ -27,6 +27,18 @@ defmodule Gateflow.CreateResources do
     |> Resources.create!()
   end
 
+  def change_state(item) do
+    change_state(item, item.state)
+  end
+
+  def change_state(item, :blocked) do
+    set_to_not_blocked(item)
+  end
+
+  def change_state(item, :not_blocked) do
+    set_to_blocked(item)
+  end
+
   def set_to_blocked(item) do
     item
     |> Ash.Changeset.for_update(:set_to_blocked)
