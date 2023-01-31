@@ -68,9 +68,10 @@ defmodule Gateflow.Project.Resources.FlowItem do
     publish_all :create, "created"
   end
 
-  # code_interface do
-  #   define_for Resources
-
-  #   define :add_child, args: [:child_id]
-  # end
+  code_interface do
+    define_for Gateflow.Project.Resources
+    define :get, action: :read, get_by: [:id]
+    define :set_to_blocked
+    define :set_to_not_blocked
+  end
 end

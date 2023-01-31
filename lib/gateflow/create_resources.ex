@@ -40,15 +40,21 @@ defmodule Gateflow.CreateResources do
   end
 
   def set_to_blocked(item) do
-    item
-    |> Ash.Changeset.for_update(:set_to_blocked)
-    |> Resources.update!()
+    FlowItem.set_to_blocked(item)
+
+    # Before the code Interface
+    # item
+    # |> Ash.Changeset.for_update(:set_to_blocked)
+    # |> Resources.update!()
   end
 
   def set_to_not_blocked(item) do
-    item
-    |> Ash.Changeset.for_update(:set_to_not_blocked)
-    |> Resources.update!()
+    FlowItem.set_to_not_blocked(item)
+
+    # Before the code Interface
+    # item
+    # |> Ash.Changeset.for_update(:set_to_not_blocked)
+    # |> Resources.update!()
   end
 
   def add_to_board(board, item) do
@@ -64,6 +70,10 @@ defmodule Gateflow.CreateResources do
   end
 
   def add_child_via_item_id(item_id, child) do
-    add_child(Gateflow.ReadResources.get_item_by_id(item_id), child)
+    item_id
+    |> FlowItem.get!()
+    |> add_child(child)
+
+    # add_child(FlowItem.get!(item_id), child)
   end
 end

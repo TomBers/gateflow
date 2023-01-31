@@ -14,10 +14,12 @@ defmodule Gateflow.ReadResources do
   end
 
   def get_item_by_id(item_id) do
-    FlowItem
-    |> Ash.Query.filter(id == ^item_id)
-    |> Resources.read!()
-    |> List.first()
+    FlowItem.get!(item_id)
+
+    # Before Code interface
+    # |> Ash.Query.filter(id == ^item_id)
+    # |> Resources.read!()
+    # |> List.first()
   end
 
   def load_children(item) do
