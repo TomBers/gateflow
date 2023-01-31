@@ -6,4 +6,9 @@ defmodule GateflowWeb.PageController do
     # so skip the default app layout.
     render(conn, :home, layout: false)
   end
+
+  def api(conn, %{"board_id" => board_id}) do
+    IO.inspect(board_id, label: "Board ID")
+    json(conn, SimpleTree.run(board_id))
+  end
 end

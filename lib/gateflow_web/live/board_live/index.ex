@@ -8,6 +8,7 @@ defmodule GateflowWeb.BoardLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
+    GateflowWeb.Endpoint.subscribe("flow_items:created")
     {:ok, socket}
   end
 
@@ -34,6 +35,17 @@ defmodule GateflowWeb.BoardLive.Index do
     CreateResources.add_child_via_item_id(item_id, child)
 
     {:noreply, assign(socket, :board, board)}
+  end
+
+  def handle_info(
+        %Phoenix.Socket.Broadcast{
+          topic: "flow_items:created",
+          payload: payload
+        } = params,
+        socket
+      ) do
+    IO.inspect(params, label: "Params")
+    {:noreply, socket}
   end
 
   def load_children(item) do

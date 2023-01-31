@@ -1,5 +1,9 @@
 defmodule Gateflow.Project.Resources.FlowItem do
-  use Ash.Resource, data_layer: AshPostgres.DataLayer
+  use Ash.Resource,
+    data_layer: AshPostgres.DataLayer,
+    notifiers: [
+      Ash.Notifier.PubSub
+    ]
 
   postgres do
     table "flowitems"
@@ -54,6 +58,14 @@ defmodule Gateflow.Project.Resources.FlowItem do
     belongs_to :board, Gateflow.Project.Resources.Board
     # See https://ash-hq.org/docs/dsl/ash/2.5.7/resource/relationships/has_many
     has_many :children, Gateflow.Project.Resources.FlowItem
+  end
+
+  pub_sub do
+    module GateflowWeb.Endpoint
+    prefix "flow_items"
+    broadcast_type :phoenix_broadcast
+
+    publish_all :create, "created"
   end
 
   # code_interface do

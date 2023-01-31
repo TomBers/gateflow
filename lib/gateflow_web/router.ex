@@ -34,9 +34,11 @@ defmodule GateflowWeb.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", GateflowWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", GateflowWeb do
+    pipe_through :api
+
+    get "/flow/:board_id", PageController, :api
+  end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:gateflow, :dev_routes) do
