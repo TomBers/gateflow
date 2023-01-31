@@ -10,6 +10,7 @@ defmodule SimpleTree do
     items = board.flow_items
 
     items
+    |> Enum.sort()
     |> Enum.map(&node_map(&1, items))
     |> sort_by_steps_to_root
     |> merge_to_parent()
