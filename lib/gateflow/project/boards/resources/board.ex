@@ -31,4 +31,24 @@ defmodule Gateflow.Project.Resources.Board do
   relationships do
     has_many :flow_items, Gateflow.Project.Resources.FlowItem
   end
+
+  code_interface do
+    define_for Gateflow.Project.Resources
+    define :get, action: :read, get_by: [:id]
+  end
+
+  aggregates do
+    count :num_blocked, :flow_items do
+      filter expr(state == :blocked)
+    end
+
+    count :num_not_blocked, :flow_items do
+      filter expr(state == :not_blocked)
+    end
+  end
+
+  calculations do
+    calculate :nick_name, :string, expr(name <> "_board")
+    calculate :test_length, :integer, expr(length([1, 2, 3]))
+  end
 end

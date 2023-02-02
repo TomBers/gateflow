@@ -13,6 +13,15 @@ defmodule Gateflow.ReadResources do
     |> List.first()
   end
 
+  def num_blocked(board_id) do
+    Board
+    # |> Ash.Query.load()
+    |> Ash.Query.load([:num_blocked, :num_not_blocked, :nick_name, :test_length])
+    |> Ash.Query.filter(id == ^board_id)
+    |> Resources.read!()
+    |> List.first()
+  end
+
   def get_item_by_id(item_id) do
     FlowItem.get!(item_id)
 
