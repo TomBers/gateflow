@@ -42,8 +42,7 @@ defmodule GateflowWeb.FormLive.BoardFormComponent do
               as: "flow_items_form",
               data: board.flow_items,
               resource: FlowItem,
-              update_action: :update,
-              create_action: :create
+              update_action: :update
             ]
           ]
         )
@@ -55,7 +54,6 @@ defmodule GateflowWeb.FormLive.BoardFormComponent do
               type: :list,
               as: "flow_items_form",
               resource: FlowItem,
-              update_action: :update,
               create_action: :create
             ]
           ]
@@ -74,11 +72,13 @@ defmodule GateflowWeb.FormLive.BoardFormComponent do
   end
 
   def handle_event("save", %{"form" => form_params}, socket) do
-    # Manually updating Sub form items, not sure if the right approach
-    Map.get(form_params, "flow_items")
-    |> Enum.map(fn {_k, %{"id" => item_id, "title" => title}} ->
-      CreateResources.change_name(item_id, title)
-    end)
+    if socket.assigns.form.type == :update do
+      # Manually updating Sub form items, not sure if the right approach
+      Map.get(form_params, "flow_items", [])
+      |> Enum.map(fn {_k, %{"id" => item_id, "title" => title}} ->
+        CreateResources.change_name(item_id, title)
+      end)
+    end
 
     case AshPhoenix.Form.submit(socket.assigns.form, params: form_params) do
       {:ok, _tweet} ->
