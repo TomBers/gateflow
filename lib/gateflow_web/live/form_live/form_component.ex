@@ -1,6 +1,8 @@
 defmodule GateflowWeb.FormLive.BoardFormComponent do
   use GateflowWeb, :live_component
 
+  alias Gateflow.Project.Resources.{Board, FlowItem}
+
   @impl true
   def render(assigns) do
     ~H"""
@@ -13,10 +15,14 @@ defmodule GateflowWeb.FormLive.BoardFormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={{f, :name}} type="text" label="Title" />
+        <.input field={{f, :name}} type="text" label="Name" />
         <:actions>
           <.button phx-disable-with="Saving...">Save</.button>
         </:actions>
+
+        <%= for flow_items_form <- Phoenix.HTML.Form.inputs_for(f, :flow_items) do %>
+          <.input field={{flow_items_form, :title}} type="text" label="Title" />
+        <% end %>
       </.simple_form>
     </div>
     """
@@ -27,14 +33,30 @@ defmodule GateflowWeb.FormLive.BoardFormComponent do
     form =
       if board do
         AshPhoenix.Form.for_action(board, :update,
-          as: "board",
           api: Gateflow.Project.Resources,
-          forms: [auto?: true]
+          forms: [
+            flow_items: [
+              type: :list,
+              as: "flow_items_form",
+              data: board.flow_items,
+              resource: FlowItem,
+              update_action: :update,
+              create_action: :create
+            ]
+          ]
         )
       else
         AshPhoenix.Form.for_action(Gateflow.Project.Resources.Board, :create,
-          as: "board",
-          api: Gateflow.Project.Resources
+          api: Gateflow.Project.Resources,
+          forms: [
+            flow_items: [
+              type: :list,
+              as: "flow_items_form",
+              resource: FlowItem,
+              update_action: :update,
+              create_action: :create
+            ]
+          ]
         )
       end
 
