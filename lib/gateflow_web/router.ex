@@ -33,6 +33,7 @@ defmodule GateflowWeb.Router do
     live "/graph/:board_id", GateflowWeb.GraphLive.Index, :index
     live "/form/:board_id", GateflowWeb.FormLive.Index, :index
     live "/boardform", GateflowWeb.CreateBoardsFormLive.Index, :index
+    live "/simpleform/:board_id", GateflowWeb.SimpleFormLive.Index, :index
   end
 
   # Other scopes may use custom stacks.
