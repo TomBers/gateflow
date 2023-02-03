@@ -27,6 +27,13 @@ defmodule Gateflow.CreateResources do
     |> Resources.create!()
   end
 
+  def change_name(item_id, new_name) do
+    item_id
+    |> FlowItem.get!()
+    |> Ash.Changeset.for_update(:update, %{title: new_name})
+    |> Resources.update!()
+  end
+
   def change_state(item) do
     change_state(item, item.state)
   end

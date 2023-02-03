@@ -1,6 +1,7 @@
 defmodule GateflowWeb.FormLive.BoardFormComponent do
   use GateflowWeb, :live_component
 
+  alias Gateflow.CreateResources
   alias Gateflow.Project.Resources.{Board, FlowItem}
 
   @impl true
@@ -22,6 +23,7 @@ defmodule GateflowWeb.FormLive.BoardFormComponent do
 
         <%= for flow_items_form <- Phoenix.HTML.Form.inputs_for(f, :flow_items) do %>
           <.input field={{flow_items_form, :title}} type="text" label="Title" />
+          <.input field={{flow_items_form, :id}} type="hidden" />
         <% end %>
       </.simple_form>
     </div>
@@ -67,12 +69,18 @@ defmodule GateflowWeb.FormLive.BoardFormComponent do
   end
 
   @impl true
-  def handle_event("validate", %{"board" => board_params}, socket) do
+  def handle_event("validate", %{"form" => board_params}, socket) do
     {:noreply, assign(socket, :form, AshPhoenix.Form.validate(socket.assigns.form, board_params))}
   end
 
-  def handle_event("save", %{"board" => board_params}, socket) do
-    case AshPhoenix.Form.submit(socket.assigns.form, params: board_params) do
+  def handle_event("save", %{"form" => form_params}, socket) do
+    # Manually updating Sub form items, not sure if the right approach
+    Map.get(form_params, "flow_items")
+    |> Enum.map(fn {_k, %{"id" => item_id, "title" => title}} ->
+      CreateResources.change_name(item_id, title)
+    end)
+
+    case AshPhoenix.Form.submit(socket.assigns.form, params: form_params) do
       {:ok, _tweet} ->
         message =
           case socket.assigns.form.type do
