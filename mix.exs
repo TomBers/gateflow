@@ -54,7 +54,8 @@ defmodule Gateflow.MixProject do
       {:ash, "~> 2.5.7"},
       {:elixir_sense, github: "elixir-lsp/elixir_sense", only: [:dev, :test]},
       {:ash_postgres, "~> 1.3.2"},
-      {:ash_admin, github: "ash-project/ash_admin", branch: "phoenix-1.7"}
+      {:ash_admin, github: "ash-project/ash_admin", branch: "phoenix-1.7"},
+      {:ash_phoenix, "~> 1.2"}
     ]
   end
 

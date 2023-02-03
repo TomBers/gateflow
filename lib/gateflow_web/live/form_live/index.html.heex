@@ -1,0 +1,8 @@
+<h1>Live Form</h1>
+<.live_component
+  module={GateflowWeb.FormLive.BoardFormComponent}
+  id={if @board, do: @board.id, else: :new}
+  board={@board}
+  action={@live_action}
+  navigate={~p"/form/#{@board.id}"}
+/>
