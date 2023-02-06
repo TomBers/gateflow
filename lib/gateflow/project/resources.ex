@@ -3,6 +3,7 @@ defmodule Gateflow.Project.Resources do
 
   resources do
     registry Gateflow.Project.Registry
+    registry Gateflow.Family.Registry
   end
 
   admin do

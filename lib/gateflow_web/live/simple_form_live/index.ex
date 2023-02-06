@@ -2,24 +2,34 @@ defmodule GateflowWeb.SimpleFormLive.Index do
   use GateflowWeb, :live_view
   use Phoenix.Component
 
-  alias Gateflow.ReadResources
-  alias Gateflow.CreateResources
+  require Ash.Query
+  alias Gateflow.Project.Resources
+  alias Gateflow.Family.Resources.{Parent, Child, GrandChild}
 
   @impl
   def mount(params, _, socket) do
-    board = ReadResources.get_board(params["board_id"])
+    parent_id = params["parent_id"]
+
+    parent =
+      Parent
+      # |> Ash.Query.load()
+      |> Ash.Query.load([:children])
+      |> Ash.Query.filter(id == ^parent_id)
+      |> Resources.read!()
+      |> List.first()
 
     form =
-      board
+      parent
       |> AshPhoenix.Form.for_update(
         :update,
         api: Gateflow.Project.Resources,
         forms: [
-          flow_items: [
+          # For forms over existing data
+          children: [
             type: :list,
-            as: "flow_items_form",
-            data: board.flow_items,
-            resource: FlowItem,
+            as: "form_name",
+            data: parent.children,
+            resource: Child,
             update_action: :update
           ]
         ]
@@ -29,7 +39,7 @@ defmodule GateflowWeb.SimpleFormLive.Index do
       assign(socket,
         form: form
       )
-      |> assign(:board_id, board.id)
+      |> assign(:parent_id, parent.id)
 
     {:ok, socket}
   end
@@ -48,12 +58,10 @@ defmodule GateflowWeb.SimpleFormLive.Index do
               <div class="form-control">
                 <.input field={{f, :name}} type="text" label="Name" />
               </div>
-
-              <%= for flow_items_form <- Phoenix.HTML.Form.inputs_for(f, :flow_items) do %>
-                <.input field={{flow_items_form, :title}} type="text" label="Title" />
-                <.input field={{flow_items_form, :id}} type="hidden" />
+              <%= for child_form <- Phoenix.HTML.Form.inputs_for(f, :children) do %>
+                <.input field={{child_form, :name}} type="text" label="Title" />
+                <.input field={{child_form, :id}} type="hidden" />
               <% end %>
-
               <.button phx-disable-with="Saving..." type="submit">Save</.button>
             </.form>
           </div>
@@ -65,16 +73,12 @@ defmodule GateflowWeb.SimpleFormLive.Index do
 
   @impl
   def handle_event("save", %{"form" => params}, socket) do
-    Map.get(params, "flow_items", [])
-    |> Enum.map(fn {_k, %{"id" => item_id, "title" => title}} ->
-      CreateResources.change_name(item_id, title)
-    end)
-
     form = AshPhoenix.Form.validate(socket.assigns.form, params)
+    IO.inspect(form, label: "Form")
 
     case AshPhoenix.Form.submit(form) do
       {:ok, result} ->
-        {:noreply, push_navigate(socket, to: "/simpleform/#{socket.assigns.board_id}")}
+        {:noreply, push_navigate(socket, to: "/simpleform/#{socket.assigns.parent_id}")}
 
       {:error, form} ->
         assign(socket, :form, form)
